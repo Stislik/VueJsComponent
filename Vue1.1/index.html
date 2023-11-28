@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=ne, initial-scale=1.0, maximum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie-edge">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <link rel="stylesheet" href="app.css">
+        <title>Vue Корабльов</title>      
+    </head>
+    <body>
+        <div class="container pt-3" id="app">
+            <div class="row mb-3"> <!-- max margin-bottom - 5-->
+                <div class="col">
+                   <h1>Video games</h1>
+                </div>
+            </div>
+            <div class="row pt-5">
+                <div class="col-md-3">
+                    <div class="form__group field" >
+                        <!--<label for="search">Find your game</label>-->
+                        <!--<input   
+                            type="text" 
+                            name="form-control" 
+                            id="search" 
+                            placeholder="Name, genre..."
+                            v-model="search"
+                            style="width: 100%;"
+                        >-->
+                        <input 
+                            type="input" 
+                            class="form__field" 
+                            placeholder="Name" 
+                            name="name" 
+                            id='name' 
+                            required
+                            v-model="search"
+                        />
+                        <!-- из инпута будет в search передаватся и от него уже уходить -->
+                        <label for="name" class="form__label">Name</label>  
+                        
+                    </div>
+
+                    <hr>
+
+                    <ul class="list-group">
+                        <li 
+                            v-for="(game, index) in filteredGames" 
+                            class="list-group-item list-group-item-action pointer"
+                            @click="selectGame(index)"
+                            :class="{'active': selectedGameIndex === index}"
+                            ><!--v-on = onclick-->
+                            <p>{{ game.name }}</p> <!--текст айтема  - {{ game.model }}-->
+                        </li> <!--"car in cars" - на каждой итерации создаётся объект car в массиве cars-->
+                    </ul>
+
+                    <hr>
+
+                </div>
+                <div class="col-md-9 pt-3"> <!--padding-top-3 -->
+                    <div id="carouselExampleDark" class="carousel  slider" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <!-- СЛАЙДЫ -->
+                        <div class="carousel-inner slider">
+                          <div class="carousel-item slider active" data-bs-interval="10000">
+                            <img :src="slide.firArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">    
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                          <div class="carousel-item slider" data-bs-interval="2000">
+                            <img :src="slide.secArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                          <div class="carousel-item slider" >
+                            <img :src="slide.thriArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7">
+                            
+                            <!--<img 
+                                :src="game.image"
+                                :alt="game.name" 
+                                class="rounded detailed-game-image"
+                            >-->
+                        </div>
+                        <div class="col-md-5">
+                            <h2 class="pt-4 pb-3">{{ game.name }}</h2>
+
+                            <ul class="infoText">
+                                <li class="infoText">Developer - <strong>{{ game.model }}</strong></li>
+                                <li class="infoText">Publisher - <strong>{{ game.owner }}</strong></li>
+                                <li class="infoText">Year - <strong>{{ game.year }}</strong></li>
+                                <li class="infoText">Genres - <strong>{{ genre.genre }}</strong></li>
+                                <li class="infoText">Rating - <strong>{{ game.rating }}</strong></li>
+                                
+                                <!-- developer, publisher, year, genres, raiting -->
+                            </ul>
+
+                            <div class="phone-block">
+                                <transition  name="phone"> <!-- нужен для анимации исчезающих элементов-->>
+                                    <p v-if="phoneVisibility">{{ game.phone }}</p> 
+                                </transition> 
+                            </div>
+                                
+                            <button 
+                                class="btn btn-outline-success mr-3" 
+                                @click="phoneVisibility = !phoneVisibility"
+                                v-text="phoneBtnText"
+                            ></button><!--margin-right - 3-->
+                            <button 
+                                class="btn btn-primary" @click="modalVisibility = true">Buy</button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div><!--Всплывающее окно-->
+            <div class="row pt-3" v-if="logs.lenght !== 0">
+                <div class="col-md-12">
+                    <ul class="list-group">
+                        <li v-for="log in logs"
+                            class="list-group-item"
+                            :class="{
+                                'list-group-item-secondary': log.type === 'cnl',
+                                'list-group-item-success': log.type === 'ok'
+                            }">
+                           {{ log.text }} {{ log.date | date}}</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <transition name="modal">
+                <div class="modal fade show" v-if="modalVisibility" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Do you want to buy this game?</h4>
+                                
+                                <button 
+                                    type="button" 
+                                    class="close" 
+                                    data-dismiss="modal" 
+                                    aria-label="Close"
+                                    @click="modalVisibility = false"
+                                    >
+                                    <span aria-hidden="true">&times;</span>    
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Current game - <strong>{{ game.name }}</strong></p>
+                                <p>Price - <strong>{{ game.cost }}</strong></p>
+                                <!--<ul>
+                                    <li>Model - <strong>{{ game.model }}</strong></li>
+                                    <li>Year - <strong>{{ game.year }}</strong></li>
+                                    <li>Owner - <strong>{{ game.owner }}</strong></li>
+                                </ul>-->
+                            </div>
+                            <div class="modal-footer">
+                                <button 
+                                    type="button" 
+                                    class="btn btn-primary" 
+                                    data-bs-dismiss="modal"
+                                    @click="newOrder">
+                                    Buy</button>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-secondary"
+                                    @click="cancelOrder">
+                                    Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <transition name="fade">    
+                <div class="modal-backdrop fade show" v-if="modalVisibility"></div>
+            </transition>
+            
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+        <script src="app.js"></script>
+        <!--https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js
+        https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js
+
+        https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css
+        https://cdn.jsdelivr.net/npm/vue@2.6.14
+        https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js
+        https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js
+        v-on или @, v-bind: или : 
+        Do you want to buy this car?-->
+    </body>
+</html>
