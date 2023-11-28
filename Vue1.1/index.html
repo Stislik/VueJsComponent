@@ -27,26 +27,49 @@
                         </svg>                     
                     </button>                
                     <h1 class="mt-0 mb-0">Video games</h1>
+                    
+                    <div class="dropdown pt-0 mt-0">
+                        <div class="form__group field pb-2 pt-0 mt-0">
+                            <input 
+                                type="text" 
+                                class="form__field search" 
+                                placeholder="Write game name" 
+                                name="name"
+                                v-model="search"
+                                @input="searchVisibility=!searchVisibility"
+                                data-bs-toggle="dropdown" aria-expanded="false"
+                                required
+                            />                            
+                        </div>
+                        <ul class="list-group dropdown-menu" aria-labelledby="dropdownMenuButton1" v-show="searchVisibility">
+                            <li 
+                                v-for="(game, index) in filteredGames" 
+                                class="list-group-item list-group-item-action pointer dropdown-item"
+                                @click="selectGame(index)"
+                                :class="{'active': selectedGameIndex === index}"
+                                >
+                                <p>{{ game.name }}</p> 
+                            </li> 
+                        </ul>
+
+                    </div>
+                    <!-- Корзина
+                    <button class="btn btn-outline-primary cart mt-0 mb-0" @click="modalCartVisibility = true ">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                          </svg>
+                    </button>-->
                 </div>
     
                 <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Backdrop with scrolling</h5>
+                        <h3 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Menu</h3>
                         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
         <!--                 Меню -Панель                    -->              
                     <div class="offcanvas-body">
-                        <p>Try scrolling the rest of the page to see this option in action.</p>
-                        <div class="form__group field pb-3" >
-                <!-- Инпут -->
-                            <!--<input   
-                            type="text" 
-                            name="form-control" 
-                            id="search" 
-                            placeholder="Name, genre..."
-                            v-model="search"
-                            style="width: 100%;"
-                        >-->
+                        <!-- <div class="form__group field pb-3" >
+                Инпут 
                             <input 
                                 type="text" 
                                 class="form__field search" 
@@ -56,19 +79,19 @@
                                 required
                                 v-model="search"
                             />
-                            <!-- из инпута будет в search передаватся и от него уже уходить -->
-                            <label for="name" class="form__label">Name</label>
-                        </div> 
-                <!-- Список-->
+                                 из инпута будет в search передаватся и от него уже уходить 
+                                <label for="name" class="form__label">Name</label>
+                            </div> -->
+                <!-- Список-->                        
                         <ul class="list-group">
                             <li 
-                                v-for="(game, index) in filteredGames" 
+                                v-for="(game, index) in games" 
                                 class="list-group-item list-group-item-action pointer"
                                 @click="selectGame(index)"
                                 :class="{'active': selectedGameIndex === index}"
-                                ><!--v-on = onclick-->
-                                <p>{{ game.name }}</p> <!--текст айтема  - {{ game.model }}-->
-                            </li> <!--"car in cars" - на каждой итерации создаётся объект car в массиве cars-->
+                                >
+                                <p>{{ game.name }}</p>
+                            </li> 
                         </ul>
     
                         <hr>
@@ -117,7 +140,9 @@
                     </div>
                     <!-- Центр ОПИСАНИЕ -->
                     <div class="row desc">
-                        <p class="description  pt-5 infoText" >{{ description.text }}</p> 
+                        <p class="description  pt-5 infoText" >{{ description.textOne }}</p> 
+                        <p class="description  pt-2 infoText" v-if="description.textTwo !== 0">{{ description.textTwo }}</p>
+                        <p class="description  pt-2 pb-5 infoText" v-if="description.textThred !== 0">{{ description.textThred }}</p>  
                     <!-- ХАРАКТЕРИСТИКИ -->    
                         <div class="col-md-6"> <!-- МИНИМУМ-->
                             <p align="center">Minimum</p>
@@ -280,9 +305,14 @@
                     >
                         Buy now
                     </button>
-                        
-                    <!--
-                        <button 
+                <!--    <button 
+                        class="btn btn-outline-secondary add"
+                        @click="check"
+                    >
+                        Add to cart
+                    </button>                        
+                    
+                    <button 
                         class="btn btn-outline-success mr-3" 
                         @click="phoneVisibility = !phoneVisibility"
                         v-text="phoneBtnText"
@@ -361,24 +391,12 @@
                         <div class="col-md-6">
                             
                                 <strong class="infoValue">
-                                    {{ genre.genre }}
+                                    {{ game.genre }}
                                 </strong>
                             
                         </div>
                         <hr>
                     </div>
-                    <!-- 
-                                            <ul class="infoText pt-3">
-                        <li class="infoText">Developer - <strong>{{ game.model }}</strong></li>
-                        <li class="infoText">Publisher - <strong>{{ game.owner }}</strong></li>
-                        <li class="infoText">Date - <strong>{{ game.date }}</strong></li>
-                        <li class="infoText">Genres - <strong>{{ genre.genre }}</strong></li>
-                        <li class="infoText">Rating - <strong>{{ game.rating }}</strong></li>
-                        
-                        
-                    </ul>
-                     -->
-                   
                 </div>
             </div>
 
@@ -408,33 +426,40 @@
                                 
                                 <button 
                                     type="button" 
-                                    class="close" 
+                                    class="btn-close" 
                                     data-dismiss="modal" 
                                     aria-label="Close"
                                     @click="modalVisibility = false"
                                     >
-                                    <span aria-hidden="true">&times;</span>    
+                                      
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <p>Current game - <strong>{{ game.name }}</strong></p>
-                                <p>Price - <strong>{{ game.cost }}</strong></p>
-                                <!--<ul>
-                                    <li>Model - <strong>{{ game.model }}</strong></li>
-                                    <li>Date - <strong>{{ game.date }}</strong></li>
-                                    <li>Owner - <strong>{{ game.owner }}</strong></li>
-                                </ul>-->
+                               <div class="row">
+                                   <div class="col-md-8">
+                                        <p>Current game - <strong>{{ game.name }}</strong></p>
+                                        <p>Price - <strong>{{ game.cost }}</strong></p>
+                                   </div>
+                                   <div class="col-md-4">
+                                    <div>
+                                        <img  
+                                        :src="game.logo" 
+                                        :alt="game.name" 
+                                        class="logo">
+                                    </div>
+                                   </div>
+                               </div>
                             </div>
                             <div class="modal-footer">
                                 <button 
                                     type="button" 
-                                    class="btn btn-primary" 
+                                    class="btn btn-outline-success modalBuy" 
                                     data-bs-dismiss="modal"
                                     @click="newOrder">
                                     Buy</button>
                                 <button 
                                     type="button" 
-                                    class="btn btn-secondary"
+                                    class="btn btn-success-secondary modalCencel"
                                     @click="cancelOrder">
                                     Cancel</button>
                             </div>
@@ -444,6 +469,62 @@
             </transition>
             <transition name="fade">    
                 <div class="modal-backdrop fade show" v-if="modalVisibility"></div>
+            </transition>
+
+            <transition name="modalcart">
+                <div class="modal fade show" v-if="modalCartVisibility" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Buying confirmation</h5>
+                                        <ul class="list-group" v-if="carts.lenght !== 0">
+                                            <li v-for="cart in carts"
+                                                class="list-group-item"
+                                                :class="{
+                                                    'list-group-item-secondary': cart.type === 'cnl',
+                                                    'list-group-item-success': cart.type === 'ok'
+                                                }">
+                                               {{ cart.text }} {{ cart.date | date}}</li>
+                                        </ul>
+                                    
+                                <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"
+                                        @click="modalCartVisibility = false"
+                                >
+        
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Current selected games</strong></p>
+                               
+                            </div>
+                            <div class="modal-footer">
+                                <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal"
+                                        @click="cancelCartOrder"
+                                >
+                                    Close
+                                </button>
+                                <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        @click="newCartOrder"
+                                >
+                                    Accept order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        
+            <transition name="fade">
+                <div class="modal-backdrop fade show" v-if="modalCartVisibility"></div>
             </transition>
             
         </div>
