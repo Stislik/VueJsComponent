@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=ne, initial-scale=1.0, maximum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie-edge">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+        <link rel="stylesheet" href="app.css">
+        <title>Vue Корабльов</title>      
+    </head>
+    <body>       
+        <!--                    САЙТ                        -->
+        <div class="container pt-3" id="site">
+            <div class="row mb-3"> <!-- max margin-bottom - 5-->
+                <div class="container-fluid justify-content-start">
+                    <!--                   Панель                       -->       
+                    <button 
+                    class="btn btn-outline-primary burger mt-0 mb-0"                        
+                    type="button" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#offcanvasWithBothOptions" 
+                    aria-controls="offcanvasWithBothOptions" 
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="icon bi bi-list" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </svg>                     
+                    </button>                
+                    <h1 class="mt-0 mb-0">Video games</h1>
+                </div>
+    
+                <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Backdrop with scrolling</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+        <!--                 Меню -Панель                    -->              
+                    <div class="offcanvas-body">
+                        <p>Try scrolling the rest of the page to see this option in action.</p>
+                        <div class="form__group field pb-3" >
+                <!-- Инпут -->
+                            <!--<input   
+                            type="text" 
+                            name="form-control" 
+                            id="search" 
+                            placeholder="Name, genre..."
+                            v-model="search"
+                            style="width: 100%;"
+                        >-->
+                            <input 
+                                type="text" 
+                                class="form__field search" 
+                                placeholder="Name" 
+                                name="form-control" 
+                                id='name' 
+                                required
+                                v-model="search"
+                            />
+                            <!-- из инпута будет в search передаватся и от него уже уходить -->
+                            <label for="name" class="form__label">Name</label>
+                        </div> 
+                <!-- Список-->
+                        <ul class="list-group">
+                            <li 
+                                v-for="(game, index) in filteredGames" 
+                                class="list-group-item list-group-item-action pointer"
+                                @click="selectGame(index)"
+                                :class="{'active': selectedGameIndex === index}"
+                                ><!--v-on = onclick-->
+                                <p>{{ game.name }}</p> <!--текст айтема  - {{ game.model }}-->
+                            </li> <!--"car in cars" - на каждой итерации создаётся объект car в массиве cars-->
+                        </ul>
+    
+                        <hr>
+                    </div>
+                </div>
+        <!--                конец Панель                    -->
+            </div>
+            <div class="row">
+                <div class="col-md-9 pt-4">
+                    <!-- Центр КАРУСЕЛЬ -->
+                    <div id="carouselExampleDark" class="carousel  slider" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                          <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <!-- СЛАЙДЫ -->
+                        <div class="carousel-inner slider">
+                          <div class="carousel-item slider active" data-bs-interval="10000">
+                            <img :src="slide.firArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">    
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                          <div class="carousel-item slider" data-bs-interval="2000">
+                            <img :src="slide.secArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                          <div class="carousel-item slider" >
+                            <img :src="slide.thriArt" class="d-block slider" :alt="game.name">
+                            <div class="carousel-caption d-none d-md-block">
+                              <p class="textWhite">{{ slide.label }}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <!-- Центр ОПИСАНИЕ -->
+                    <div class="row desc">
+                        <p class="description  pt-5 infoText" >{{ description.text }}</p> 
+                    <!-- ХАРАКТЕРИСТИКИ -->    
+                        <div class="col-md-6"> <!-- МИНИМУМ-->
+                            <p align="center">Minimum</p>
+                            <div class="row pt-3">
+                                <div class="col-md-6">
+                                    <p class="info">OS:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMin.os }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">CPU:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMin.cpu }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">GPU:</p>
+                                </div>
+                                <div class="col-md-6">
+                                   
+                                        <strong class="infoValue">
+                                            {{ characteristicMin.gpu }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">RAM:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMin.ram  }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">Memory:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMin.memory }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="col-md-6"><!-- ОПТИМАЛ-->
+                            <p align="center">Recommended</p>
+                            <div class="row pt-3">
+                                <div class="col-md-6">
+                                    <p class="info">OS:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMid.os }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">CPU:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMid.cpu }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">GPU:</p>
+                                </div>
+                                <div class="col-md-6">
+                                   
+                                        <strong class="infoValue">
+                                            {{ characteristicMid.gpu }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">RAM:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMid.ram  }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="info">Memory:</p>
+                                </div>
+                                <div class="col-md-6">
+                                    
+                                        <strong class="infoValue">
+                                            {{ characteristicMid.memory }}
+                                        </strong>
+                                    
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Право ИНФА-->
+                <div class="col-md-3 pt-4"> <!--padding-top-3 -->
+                    
+                    <div>
+                        <img  
+                        :src="game.logo" 
+                        :alt="game.name" 
+                        class="logo pb-4">
+                    </div>
+                    
+                    <!-- <h2 class="pb-3">{{ game.name }}</h2> -->
+
+                    <div class="phone-block">
+                        <transition  name="phone"> <!-- нужен для анимации исчезающих элементов   v-if="phoneVisibility"-->>
+                            <p >{{ game.cost }}</p> 
+                        </transition> 
+                    </div>
+                    <button 
+                        class="btn btn-outline-success buy"
+                        @click="modalVisibility=true"
+                    >
+                        Buy now
+                    </button>
+                        
+                    <!--
+                        <button 
+                        class="btn btn-outline-success mr-3" 
+                        @click="phoneVisibility = !phoneVisibility"
+                        v-text="phoneBtnText"
+                    ></button>
+                    -->
+                    <!--margin-right - 3-->
+                    <div class="row pt-3">
+                        <div class="col-md-6">
+                            <p class="info">Developer</p>
+                        </div>
+                        <div class="col-md-6">
+                            
+                                <strong class="infoValue">
+                                    {{ game.model }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="info">Publisher</p>
+                        </div>
+                        <div class="col-md-6">
+                            
+                                <strong class="infoValue">
+                                    {{ game.owner }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="info">Release date</p>
+                        </div>
+                        <div class="col-md-6">
+                           
+                                <strong class="infoValue">
+                                    {{ game.date }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="info">Initial release</p>
+                        </div>
+                        <div class="col-md-6">
+                            
+                                <strong class="infoValue">
+                                    {{ game.iniDate  }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="info">Rating</p>
+                        </div>
+                        <div class="col-md-6">
+                            
+                                <strong class="infoValue">
+                                    {{ game.rating }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="info">Genres</p>
+                        </div>
+                        <div class="col-md-6">
+                            
+                                <strong class="infoValue">
+                                    {{ genre.genre }}
+                                </strong>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                    <!-- 
+                                            <ul class="infoText pt-3">
+                        <li class="infoText">Developer - <strong>{{ game.model }}</strong></li>
+                        <li class="infoText">Publisher - <strong>{{ game.owner }}</strong></li>
+                        <li class="infoText">Date - <strong>{{ game.date }}</strong></li>
+                        <li class="infoText">Genres - <strong>{{ genre.genre }}</strong></li>
+                        <li class="infoText">Rating - <strong>{{ game.rating }}</strong></li>
+                        
+                        
+                    </ul>
+                     -->
+                   
+                </div>
+            </div>
+
+            <!-- Уведомление (заказы)                     Сделать приклееные к низу -->
+            <footer>
+                <div class="row pt-3" v-if="logs.lenght !== 0">
+                    <div class="col-md-12">
+                        <ul class="list-group">
+                            <li v-for="log in logs"
+                                class="list-group-item"
+                                :class="{
+                                    'list-group-item-secondary': log.type === 'cnl',
+                                    'list-group-item-success': log.type === 'ok'
+                                }">
+                               {{ log.text }} {{ log.date | date}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </footer>
+        <!--           Всплывающее окно                          -->
+            <transition name="modal">
+                <div class="modal fade show" v-if="modalVisibility" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Do you want to buy this game?</h4>
+                                
+                                <button 
+                                    type="button" 
+                                    class="close" 
+                                    data-dismiss="modal" 
+                                    aria-label="Close"
+                                    @click="modalVisibility = false"
+                                    >
+                                    <span aria-hidden="true">&times;</span>    
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Current game - <strong>{{ game.name }}</strong></p>
+                                <p>Price - <strong>{{ game.cost }}</strong></p>
+                                <!--<ul>
+                                    <li>Model - <strong>{{ game.model }}</strong></li>
+                                    <li>Date - <strong>{{ game.date }}</strong></li>
+                                    <li>Owner - <strong>{{ game.owner }}</strong></li>
+                                </ul>-->
+                            </div>
+                            <div class="modal-footer">
+                                <button 
+                                    type="button" 
+                                    class="btn btn-primary" 
+                                    data-bs-dismiss="modal"
+                                    @click="newOrder">
+                                    Buy</button>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-secondary"
+                                    @click="cancelOrder">
+                                    Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <transition name="fade">    
+                <div class="modal-backdrop fade show" v-if="modalVisibility"></div>
+            </transition>
+            
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+        <script src="app.js"></script>
+        <!--https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js
+        https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js
+
+        https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css
+        https://cdn.jsdelivr.net/npm/vue@2.6.14
+        https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js
+        https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js
+        v-on или @, v-bind: или : 
+        Do you want to buy this car?-->
+    </body>
+</html>
